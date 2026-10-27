@@ -4,12 +4,14 @@ from app.adapters.ashby import AshbySource
 from app.adapters.base import JobSource
 from app.adapters.comeet import ComeetSource
 from app.adapters.greenhouse import GreenhouseSource
+from app.adapters.lever import LeverSource
 from app.models import Job
 
 SOURCES: list[JobSource] = [
     GreenhouseSource(),
     ComeetSource(),
     AshbySource(),
+    LeverSource(),
 ]
 
 
