@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -5,10 +6,17 @@ from fastapi import FastAPI
 from app import db
 from app.routers import jobs
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    datefmt="%H:%M:%S",
+)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db.connect()
+    await db.create_indexes()
     yield
     await db.disconnect()
 

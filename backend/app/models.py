@@ -11,3 +11,8 @@ class Job(BaseModel):
     location: str | None = None
     url: str
     updated_at: datetime | None = None
+    company_key: str | None = None
+    categories: list[str] = []
+    first_seen_at: datetime | None = None
+    last_seen_at: datetime | None = None
+    closed_at: datetime | None = None

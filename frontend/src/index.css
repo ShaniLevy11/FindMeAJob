@@ -168,3 +168,47 @@ body {
     transform: translateY(-3px);
   }
 }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.toolbar .status {
+  margin: 0;
+}
+
+.sync {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sync-button {
+  padding: 8px 18px;
+  font-family: var(--font-cute);
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  background: var(--coffee);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sync-button:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.sync-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.error {
+  color: #d92d20;
+}
