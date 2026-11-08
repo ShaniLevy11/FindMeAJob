@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchJobs } from './api'
+import { fetchJobs, syncJobs } from './api'
 import CoffeeCup from './components/CoffeeCup'
 import JobTable from './components/JobTable'
 import type { Job } from './types'
@@ -19,6 +19,8 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+  const [syncing, setSyncing] = useState(false)
+  const [syncMessage, setSyncMessage] = useState<string | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -39,6 +41,23 @@ export default function App() {
     return () => controller.abort()
   }, [])
 
+  async function handleSync() {
+    setSyncing(true)
+    setSyncMessage(null)
+
+    try {
+      const result = await syncJobs()
+      const data = await fetchJobs()
+      setJobs(sortNewestFirst(data))
+      setError(null)
+      setSyncMessage(`Sync finished: ${result.new_jobs} new jobs, ${result.open_jobs_in_db} open in total`)
+    } catch (err) {
+      setSyncMessage(`Sync failed: ${(err as Error).message}`)
+    } finally {
+      setSyncing(false)
+    }
+  }
+
   const visibleJobs = jobs.slice(0, visibleCount)
 
   return (
@@ -52,15 +71,24 @@ export default function App() {
       </header>
 
       <main>
-        {loading && <p className="status">Loading jobs, this can take up to 30 seconds...</p>}
-        {error && <p className="status error">Could not load jobs: {error}</p>}
+        <div className="toolbar">
+          <p className="status">
+            {loading && 'Loading jobs...'}
+            {!loading && !error && `Showing ${visibleJobs.length} of ${jobs.length} jobs`}
+            {error && <span className="error">Could not load jobs: {error}</span>}
+          </p>
+
+          <div className="sync">
+            {syncing && <span className="status">Syncing, this can take up to 30 seconds...</span>}
+            {!syncing && syncMessage && <span className="status">{syncMessage}</span>}
+            <button className="sync-button" onClick={handleSync} disabled={syncing}>
+              {syncing ? 'Syncing...' : 'Sync jobs'}
+            </button>
+          </div>
+        </div>
 
         {!loading && !error && (
           <>
-            <p className="status">
-              Showing {visibleJobs.length} of {jobs.length} jobs
-            </p>
-
             <JobTable jobs={visibleJobs} />
 
             {visibleCount < jobs.length && (

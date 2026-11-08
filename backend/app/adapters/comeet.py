@@ -268,6 +268,9 @@ class ComeetSource(JobSource):
         "headers": {"User-Agent": "Mozilla/5.0"},
     }
 
+    def company_key(self, company: tuple[str, str]) -> str:
+        return company[0]
+
     async def get_token(self, client: httpx.AsyncClient, slug: str, uid: str) -> str:
         resp = await client.get(CAREERS_PAGE_URL.format(slug=slug, uid=uid))
         resp.raise_for_status()
